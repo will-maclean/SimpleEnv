@@ -10,10 +10,10 @@ entry_points = {
 }
 
 setup(
-    name='SimpleEnv',
+    name='simple_env',
     version='0.1',
     description='A simple MDP Gym environment',
-    url='https://github.com/will-maclean/MinAtar',
+    url='https://github.com/will-maclean/SimpleEnv',
     author='Will Maclean',
     author_email='macleanwill1@gmail.com',
     license='GPL',

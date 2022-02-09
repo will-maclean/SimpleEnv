@@ -5,20 +5,22 @@ import numpy as np
 
 
 class Node:
-    def __init(self, 
-               id: int,
-               nodes: Optional[List[Node]], 
-               rewards: Optional[List[Node]],
+    def __init__(self, 
+               idx: int,
+               nodes: Optional[List['Node']]=None, 
+               rewards: Optional[List['Node']]=None,
                terminal=False):
-        assert len(nodes) == len(rewards)
         
-        self.id = id
+        if nodes is not None or rewards is not None:
+            assert len(nodes) == len(rewards)
+        
+        self.id = idx
         self.nodes = nodes if nodes is not None else []
         self.rewards = rewards if rewards is not None else []
 
         self.terminal = terminal
 
-    def add_connections(self, node, reward):
+    def add_connection(self, node, reward):
         self.nodes.append(node)
         self.rewards.append(reward)
 
@@ -28,7 +30,6 @@ class SimpleEnv(gym.Env):
 
         self.action_space = gym.spaces.Discrete(2)
         self.observation_space = gym.spaces.Discrete(5)
-        self.rng = np.random.default_rng()
         self.random_prob = random_prob
         
         # create nodes
@@ -46,13 +47,13 @@ class SimpleEnv(gym.Env):
         self.nodes[0].add_connection(self.nodes[2], -0.1)
 
         self.nodes[1].add_connection(self.nodes[2], -0.1)
-        self.nodes[1].add_connections(self.nodes[3], -0.1)
+        self.nodes[1].add_connection(self.nodes[3], -0.1)
 
-        self.nodes[2].add_connections(self.nodes[2], -0.01)
-        self.nodes[2].add_connections(self.nodes[4], 0)
+        self.nodes[2].add_connection(self.nodes[2], -0.01)
+        self.nodes[2].add_connection(self.nodes[4], 0)
 
-        self.nodes[3].add_connections(self.nodes[4], 1)
-        self.nodes[3].add_connections(self.nodes[0], 0)
+        self.nodes[3].add_connection(self.nodes[4], 1)
+        self.nodes[3].add_connection(self.nodes[0], 0)
 
         self.current_node = None
         self.needs_reset = True
@@ -64,15 +65,16 @@ class SimpleEnv(gym.Env):
         n_actions = self.action_space.n
 
         for node in self.nodes:
-            assert n_actions == len(node.nodes)
+            if not node.terminal:
+                assert n_actions == len(node.nodes)
 
     def step(self, action):
         if self.needs_reset:
             raise ValueError("You need to rest the environment first!")
 
-        if self.rng.rand() < self.random_prob:
+        if np.random.random() < self.random_prob:
             # random action
-            action = self.rng.randint(2)
+            action = np.random.randint(2)
         
         next_node = self.current_node.nodes[action]
         reward = self.current_node.rewards[action]
@@ -87,9 +89,9 @@ class SimpleEnv(gym.Env):
 
 
     def reset(self):
-        init_node = self.rng.rand_int(len(self.initial_nodes))
+        init_node = np.random.randint(len(self.initial_nodes))
         self.current_node = self.initial_nodes[init_node]
-
+        self.needs_reset = False
         return self._obs()
     
     def _obs(self):
