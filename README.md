@@ -1,9 +1,12 @@
 # SimpleEnv
-A simple MDP Gym enironment
+A simple MDP Gym environment
 
-State space: One hot vector, length = 5
+![environment description](img/env.png)
+Actions are counted clockwise.
 
-Action space: Discrete(2)
+State space: One hot vector, length = 6
+
+Action space: Discrete(3)
 
 ## Installation
 ```

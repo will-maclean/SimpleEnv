@@ -28,32 +28,37 @@ class Node:
 class SimpleEnv(gym.Env):
     def __init__(self, random_prob=0.1):
 
-        self.action_space = gym.spaces.Discrete(2)
-        self.observation_space = gym.spaces.Discrete(5)
+        self.action_space = gym.spaces.Discrete(3)
+        self.observation_space = gym.spaces.Discrete(6)
         self.random_prob = random_prob
         
         # create nodes
-        self.nodes = [Node(i) for i in range(5)]
+        self.nodes = [Node(i) for i in range(6)]
         
         # set final node(s)
         self.nodes[4].terminal = True
+        self.nodes[5].terminal = True
 
         # set initial node(s)
         self.initial_nodes = [self.nodes[0], self.nodes[1]]
 
         # create connections
 
+        self.nodes[0].add_connection(self.nodes[0], -0.1)
+        self.nodes[0].add_connection(self.nodes[2], -0.2)
         self.nodes[0].add_connection(self.nodes[1], 0)
-        self.nodes[0].add_connection(self.nodes[2], -0.1)
-
-        self.nodes[1].add_connection(self.nodes[2], -0.1)
+        
+        self.nodes[1].add_connection(self.nodes[2], -0.2)
         self.nodes[1].add_connection(self.nodes[3], -0.1)
+        self.nodes[1].add_connection(self.nodes[5], -1)
 
-        self.nodes[2].add_connection(self.nodes[2], -0.01)
-        self.nodes[2].add_connection(self.nodes[4], 0)
+        self.nodes[2].add_connection(self.nodes[2], -0.1)
+        self.nodes[2].add_connection(self.nodes[4], 1)
+        self.nodes[2].add_connection(self.nodes[3], 0)
 
         self.nodes[3].add_connection(self.nodes[4], 1)
-        self.nodes[3].add_connection(self.nodes[0], 0)
+        self.nodes[3].add_connection(self.nodes[5], -1)
+        self.nodes[3].add_connection(self.nodes[0], -0.1)
 
         self.current_node = None
         self.needs_reset = True
