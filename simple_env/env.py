@@ -27,9 +27,10 @@ class Node:
 
 class SimpleEnv(gym.Env):
     def __init__(self, random_prob=0.1):
+        n_obs = 6
 
         self.action_space = gym.spaces.Discrete(3)
-        self.observation_space = gym.spaces.Discrete(6)
+        self.observation_space = gym.spaces.Box(low=np.zeros(n_obs), high=np.ones(n_obs), dtype=np.float32)
         self.random_prob = random_prob
         
         # create nodes
@@ -81,7 +82,7 @@ class SimpleEnv(gym.Env):
 
             # Define action space
             n_actions = self.action_space.n
-            action_space = range(n_actions).remove(action)
+            action_space = list(range(n_actions)).remove(action)
 
             # Select random action
             action = np.random.randint(n_actions)
@@ -105,7 +106,7 @@ class SimpleEnv(gym.Env):
         return self._obs()
     
     def _obs(self):
-        vec = np.zeros(self.observation_space.n)
+        vec = np.zeros(self.observation_space.shape[0])
         vec[self.current_node.id] = 1
 
         return vec
