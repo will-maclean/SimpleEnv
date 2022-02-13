@@ -110,7 +110,11 @@ class SimpleEnv(gym.Env):
 
         return vec
 
-    def _generate_mdp_transitions_list(self):
+    def __generate_mdp_transitions_list(self):
+        """
+        Private method to generate list that represents state-action transitions
+        :return: List of transitions
+        """
         transitions = []
 
         for node in self.nodes:
@@ -123,9 +127,17 @@ class SimpleEnv(gym.Env):
         return transitions
 
     def get_mdp_transitions(self):
-        return self._generate_mdp_transitions_list()
+        """
+        Getter method to get list of state-action transitions
+        :return: List of transitions
+        """
+        return self.__generate_mdp_transitions_list()
 
-    def _generate_mdp_rewards_list(self):
+    def __generate_mdp_rewards_list(self):
+        """
+        Private Method to generate list that represents the reward function
+        :return: List of rewards [S, S']
+        """
         rewards = []
 
         for node in self.nodes:
@@ -134,9 +146,17 @@ class SimpleEnv(gym.Env):
         return rewards
 
     def get_mdp_rewards(self):
-        return self._generate_mdp_rewards_list()
+        """
+        Getter Method to get list of rewards
+        :return: List of rewards [S, S']
+        """
+        return self.__generate_mdp_rewards_list()
 
     def get_terminal_states(self):
+        """
+        Getter Method to get a list of the terminal states
+        :return: List of terminal states
+        """
         terminal_states = [node.id for node in self.nodes if node.terminal]
 
         return terminal_states
