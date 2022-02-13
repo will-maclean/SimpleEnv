@@ -47,7 +47,7 @@ class SimpleEnv(gym.Env):
         self.nodes[0].add_connection(self.nodes[0], -0.1)
         self.nodes[0].add_connection(self.nodes[2], -0.2)
         self.nodes[0].add_connection(self.nodes[1], 0)
-        
+
         self.nodes[1].add_connection(self.nodes[2], -0.2)
         self.nodes[1].add_connection(self.nodes[3], -0.1)
         self.nodes[1].add_connection(self.nodes[5], -1)
@@ -78,9 +78,14 @@ class SimpleEnv(gym.Env):
             raise ValueError("You need to rest the environment first!")
 
         if np.random.random() < self.random_prob:
-            # random action
-            action = np.random.randint(2)
-        
+
+            # Define action space
+            n_actions = self.action_space.n
+            action_space = range(n_actions).remove(action)
+
+            # Select random action
+            action = np.random.randint(n_actions)
+
         next_node = self.current_node.nodes[action]
         reward = self.current_node.rewards[action]
         done = next_node.terminal
@@ -104,3 +109,34 @@ class SimpleEnv(gym.Env):
         vec[self.current_node.id] = 1
 
         return vec
+
+    def _generate_mdp_transitions_list(self):
+        transitions = []
+
+        for node in self.nodes:
+            current_state_transitions = []
+            for connected_node in node.nodes:
+                current_state_transitions.append(connected_node.id)
+
+            transitions.append(current_state_transitions)
+
+        return transitions
+
+    def get_mdp_transitions(self):
+        return self._generate_mdp_transitions_list()
+
+    def _generate_mdp_rewards_list(self):
+        rewards = []
+
+        for node in self.nodes:
+            rewards.append(node.rewards)
+
+        return rewards
+
+    def get_mdp_rewards(self):
+        return self._generate_mdp_rewards_list()
+
+    def get_terminal_states(self):
+        terminal_states = [node.id for node in self.nodes if node.terminal]
+
+        return terminal_states
